@@ -2,22 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Messages du Port Série</title>
+    <title>Chute Messages</title>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', (event) => {
-            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var socket = io();
+
+            socket.on('connect', function() {
+                console.log('Connected to server');
+            });
+
+            socket.on('last_messages', function(messages) {
+                var messageList = document.getElementById('messageList');
+                messageList.innerHTML = ''; // Clear the list
+                messages.forEach(function(msg) {
+                    var listItem = document.createElement('li');
+                    listItem.textContent = `Date: ${msg.date}, Card ID: ${msg.card_id}`;
+                    messageList.appendChild(listItem);
+                });
+            });
+
             socket.on('new_message', function(data) {
-                const node = document.createElement("LI");
-                const textnode = document.createTextNode(data.message);
-                node.appendChild(textnode);
-                document.getElementById("messages").appendChild(node);
+                console.log('New message received:', data.message);
+                // No need to update the message list here since 'last_messages' will handle it
             });
         });
     </script>
 </head>
 <body>
-    <h1>Messages reçus:</h1>
-    <ul id="messages"></ul>
+    <h1>Chute Messages</h1>
+    <ul id="messageList"></ul>
 </body>
 </html>
