@@ -4,6 +4,50 @@
     <meta charset="UTF-8">
     <title>Chute Messages</title>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var socket = io();
@@ -13,24 +57,38 @@
             });
 
             socket.on('last_messages', function(messages) {
-                var messageList = document.getElementById('messageList');
-                messageList.innerHTML = ''; // Clear the list
+                var messageTableBody = document.getElementById('messageTableBody');
+                messageTableBody.innerHTML = ''; // Clear the table body
                 messages.forEach(function(msg) {
-                    var listItem = document.createElement('li');
-                    listItem.textContent = `Date: ${msg.date}, Card ID: ${msg.card_id}`;
-                    messageList.appendChild(listItem);
-                });
-            });
+                    var row = document.createElement('tr');
+                    var dateCell = document.createElement('td');
+                    var cardIdCell = document.createElement('td');
 
-            socket.on('new_message', function(data) {
-                console.log('New message received:', data.message);
-                // No need to update the message list here since 'last_messages' will handle it
+                    dateCell.textContent = msg.date;
+                    cardIdCell.textContent = msg.card_id;
+
+                    row.appendChild(dateCell);
+                    row.appendChild(cardIdCell);
+                    messageTableBody.appendChild(row);
+                });
             });
         });
     </script>
 </head>
 <body>
-    <h1>Chute Messages</h1>
-    <ul id="messageList"></ul>
+    <div id="container">
+        <h1>Chute Messages</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody id="messageTableBody">
+                <!-- Messages will be inserted here -->
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
